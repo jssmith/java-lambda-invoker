@@ -47,3 +47,42 @@ java -jar target/java-lambda-invoker-1.0-SNAPSHOT.jar HelloPython .010 2 e200
 ```
 
 This program will save the return values of function invocations in the file lambda_async_log.json.
+
+
+## Sample Lambda Source Code
+
+Set up the function `HelloPython` as follows:
+
+```python
+import json
+import time
+import random
+
+lambda_id = '%016x' % random.getrandbits(64)
+
+def lambda_handler(event, context):
+    start_time = time.time()
+    invocation_id = '%016x' % random.getrandbits(64)
+
+    if "Sleep" in event:
+        sleep_duration = float(event["Sleep"])
+    else:
+        sleep_duration = None
+
+    if "ExperimentId" in event:
+        experiment_id = event["ExperimentId"]
+    else:
+        experiment_id = None
+
+    if sleep_duration:
+        time.sleep(sleep_duration)
+    end_time = time.time()
+    return {
+        "LambdaId" : lambda_id,
+        "InvocationId" : invocation_id,
+        "ExperimentId" : experiment_id,
+        "StartTime" : start_time,
+        "EndTime" : end_time,
+        "SleepDuration" : sleep_duration,
+    }
+```
